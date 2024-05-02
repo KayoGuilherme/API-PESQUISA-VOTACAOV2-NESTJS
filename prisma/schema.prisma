@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  email     String
+  CPF       String   @unique
+  roleId    Int      @default(1)
+  senha     String
+  cidade    String
+  Estado    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role Roles @relation(fields: [roleId], references: [id_role])
+}
+
+model Roles {
+  id_role    Int    @id @default(autoincrement())
+  name_role  String
+  Permission String
+
+  Users Users[]
+}
+
+model Candidato {
+  id_candidato   Int              @id @default(autoincrement())
+  name           String
+  apelido        String?
+  Partido        String?
+  cidade         String
+  estado         String
+  cargo          String
+  Votos          Votos[]
+  ImageCandidato ImageCandidato[]
+}
+
+model ImageCandidato {
+  id_image    Int       @id @default(autoincrement())
+  Url         String
+  candidatoId Int
+  candidato   Candidato @relation(fields: [candidatoId], references: [id_candidato])
+}
+
+model Votos {
+  id_voto            Int       @id @default(autoincrement())
+  nome_eleitor       String
+  Idade_eleitor      Int
+  Localidade_eleitor String
+  Votar              Boolean
+  candidato          Candidato @relation(fields: [candidatoId], references: [id_candidato], onDelete: Cascade)
+  candidatoId        Int
+}
